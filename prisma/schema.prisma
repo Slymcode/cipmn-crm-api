@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String
+  membership  Membership?
+  createdAt DateTime @default(now())
+}
+
+model Membership {
+  id                      String   @id @default(uuid())
+  userId                  String  @unique
+  user            User    @relation(fields: [userId], references: [id])
+  passport                String?
+  name          String
+  title                   String
+  email                   String   @unique
+  phone                   String
+  dob                     String
+  maritalStatus           String
+  membershipID            String
+  membershipCategory      String
+  professionalLicenseID   String?
+  yearOfLicense          String?
+  stampIDNumber          String?
+  sealIDNumber           String?
+  specialization         String?
+  countryOfOrigin         Json     @default("{}")
+  countryOfResidence      Json     @default("{}")
+  countryOfOperation      Json     @default("{}")
+  educationQualification  Json     @default("{}")
+  professionalQualification Json   @default("[]")
+  workExperience          Json     @default("[]")
+  references              Json     @default("[]")
+  occupation              String?
+  operationalSector       String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
