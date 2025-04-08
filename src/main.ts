@@ -2,15 +2,18 @@ import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const { httpAdapter } = app.get(HttpAdapterHost) 
- 
-  // Enable global validation for DTOs
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+  const { httpAdapter } = app.get(HttpAdapterHost);
 
+  // Enable global validation for DTOs
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+  );
+  app.useGlobalFilters(new AllExceptionsFilter());
   // Enable Swagger
   app.setGlobalPrefix('api');
   const config = new DocumentBuilder()
@@ -23,7 +26,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document); // API Docs available at /api/docs
 
-  app.enableCors()
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();

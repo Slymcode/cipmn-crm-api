@@ -1,33 +1,49 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
 import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { successResponse } from '../common/utils/response.util';
 
 @Injectable()
 export class MembershipService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateMembershipDto) {
-    return this.prisma.membership.create({ data });
+  async create(dto: CreateMembershipDto) {
+    const membership = await this.prisma.membership.create({
+      data: dto,
+    });
+
+    return successResponse('Membership created successfully', membership, 201);
   }
 
   async findAll() {
-    return this.prisma.membership.findMany();
+    const memberships = await this.prisma.membership.findMany();
+    return successResponse('All memberships retrieved', memberships);
   }
 
   async findOne(id: string) {
     const membership = await this.prisma.membership.findUnique({
       where: { id },
     });
-    if (!membership) throw new NotFoundException('Membership not found');
-    return membership;
+
+    if (!membership) {
+      throw new NotFoundException('Membership not found');
+    }
+
+    return successResponse('Membership found', membership);
   }
 
-  async update(id: string, data: UpdateMembershipDto) {
-    return this.prisma.membership.update({ where: { id }, data });
+  async update(id: string, dto: UpdateMembershipDto) {
+    const membership = await this.prisma.membership.update({
+      where: { id },
+      data: dto,
+    });
+
+    return successResponse('Membership updated successfully', membership);
   }
 
   async remove(id: string) {
-    return this.prisma.membership.delete({ where: { id } });
+    await this.prisma.membership.delete({ where: { id } });
+    return successResponse('Membership deleted successfully', null, 204);
   }
 }

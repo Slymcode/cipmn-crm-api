@@ -37,7 +37,7 @@ export class UsersController {
     description: 'Unauthorized - Invalid or missing token',
   })
   async getProfile(@Req() req) {
-    return this.usersService.getUserProfile(req.user.userId);
+    return this.usersService.findOne(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
