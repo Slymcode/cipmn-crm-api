@@ -9,6 +9,9 @@ import {
   ValidatorConstraintInterface,
   registerDecorator,
   ValidationOptions,
+  IsOptional,
+  IsString,
+  IsIn,
 } from 'class-validator';
 
 @ValidatorConstraint({ name: 'MatchPasswords', async: false })
@@ -61,8 +64,14 @@ export class RegisterDto {
   confirmPassword: string;
 
   @ApiProperty({
-    example: 'member',
-    description: 'User type',
+    example: 'staff',
+    description: 'User type (staff or member)',
+    default: 'staff',
   })
-  userType: string;
+  @IsOptional() // If you want to set the default from backend
+  @IsString()
+  @IsIn(['member', 'staff'], {
+    message: 'userType must be either staff or member',
+  })
+  userType?: string;
 }
