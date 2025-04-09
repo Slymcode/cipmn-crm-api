@@ -65,13 +65,8 @@ export class RegisterDto {
 
   @ApiProperty({
     example: 'staff',
-    description: 'User type (staff or member)',
-    default: 'staff',
+    description: 'User type',
   })
-  @IsOptional() // If you want to set the default from backend
   @IsString()
-  @IsIn(['member', 'staff'], {
-    message: 'userType must be either staff or member',
-  })
-  userType?: string;
+  userType: string;
 }
