@@ -21,6 +21,7 @@ export class AuthService {
     email: string,
     password: string,
     confirmPassword: string,
+    userType: string,
   ) {
     if (password !== confirmPassword) {
       throw new BadRequestException('Passwords do not match');
@@ -31,7 +32,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      data: { name, email, password: hashedPassword, userType },
     });
 
     const { password: _, ...safeUser } = user;

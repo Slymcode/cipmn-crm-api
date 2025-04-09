@@ -59,4 +59,10 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Confirm Password is required' })
   @Match('password', { message: 'Passwords do not match' })
   confirmPassword: string;
+
+  @ApiProperty({
+    example: 'member',
+    description: 'User type',
+  })
+  userType: string;
 }
