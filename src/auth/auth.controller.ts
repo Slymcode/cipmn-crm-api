@@ -21,7 +21,6 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Validation failed' })
   @ApiBody({ type: RegisterDto }) // This makes Swagger display the request body
   async register(@Body() body: RegisterDto) {
-    console.log('TTTTTTTTTTTTT', body);
     return this.authService.register(
       body.name,
       body.email,
