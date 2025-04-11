@@ -42,4 +42,15 @@ export class UsersService {
     await this.prisma.user.delete({ where: { id } });
     return successResponse('User deleted successfully', null, 204);
   }
+  async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
 }

@@ -6,10 +6,11 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiParam,
 } from '@nestjs/swagger';
 
-@ApiTags('Users') // Groups under "Users" in Swagger
-@ApiBearerAuth() // Requires JWT Bearer Token
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -45,5 +46,26 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete a user record' })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  // ✅ New endpoint: Get user by email
+  @UseGuards(JwtAuthGuard)
+  @Get('by-email/:email')
+  @ApiOperation({ summary: 'Get user by email' })
+  @ApiParam({ name: 'email', type: 'string', example: 'john@example.com' })
+  @ApiResponse({
+    status: 200,
+    description: 'User found by email',
+    schema: {
+      example: {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        name: 'John Doe',
+        email: 'john@example.com',
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async getUserByEmail(@Param('email') email: string) {
+    return this.usersService.findByEmail(email);
   }
 }
