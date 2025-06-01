@@ -3,6 +3,9 @@ import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { successResponse } from '../common/utils/response.util';
+import * as QRCode from 'qrcode';
+import { join, dirname } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 @Injectable()
 export class MembershipService {
@@ -45,5 +48,22 @@ export class MembershipService {
   async remove(id: string) {
     await this.prisma.membership.delete({ where: { id } });
     return successResponse('Membership deleted successfully', null, 204);
+  }
+  async generateQRCode(data: string, membershipId: string): Promise<string> {
+    const projectRoot = process.cwd();
+    const relativePath = join('uploads', `${membershipId}.png`);
+    const qrPath = join(projectRoot, relativePath);
+    const qrDir = dirname(qrPath);
+
+    if (!existsSync(qrDir)) {
+      mkdirSync(qrDir, { recursive: true });
+    }
+
+    await QRCode.toFile(qrPath, data, {
+      color: { dark: '#000', light: '#FFF' },
+      width: 300,
+    });
+
+    return join('uploads', `${membershipId}.png`).replace(/\\/g, '/');
   }
 }
